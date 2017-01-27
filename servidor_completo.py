@@ -1,5 +1,8 @@
 from tkinter import *
-from threading import Thread
+#import thread
+#import threading
+#from threading import Thread
+import _thread
 import socket
 
 from servidor import *
@@ -7,15 +10,19 @@ from servidor import *
 
 
 class servidor_interface(Thread):
-    subject_list = []
-    def __init__(self,root, obj):
+    subject_list = ""
+    def __init__(self, root=None):
 
         #-----São as frames(áreas), utilizadas para salvar conteúdo dentro delas-----
         #subject_list = []
-        Thread.__init__(self)
+        #Thread.__init__(self)
 
-        object_servidor = servidor()
-        object_servidor.start()
+        #object_servidor = servidor()
+        #object_servidor.start()
+
+        #_thread.start_new_thread(self.serv, "JUCSA")
+
+        #self.serv()
 
         self.fontePadrao = ("Arial", "15")
 
@@ -98,7 +105,13 @@ class servidor_interface(Thread):
         self.enviar["command"] = self.set_subject
         self.enviar.pack()
 
-        #root.mainloop()
+
+
+        #_thread.start_new_thread(self.serv, "JUCSA")
+
+        _thread.start_new_thread(self.serv, tuple(["null","null"]))
+
+        root.mainloop()
 
         #self.set_text("juca", self.conversa)
 
@@ -114,6 +127,53 @@ class servidor_interface(Thread):
              subject_all = subject_all + subject_unique #+ "\n"
 
         self.subject['text'] = subject_all
+
+    def serv(self, juca1, juca2):
+        #--------------------------Pega o IP local da máquina-------------------
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('google.com', 0))
+
+        HOST = s.getsockname()[0]              # Endereco IP do Servidor
+        PORT = 5000                            # Porta que o Servidor esta
+        #-----------------------------------------------------------------------
+
+        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)   # Reconect, utilizada
+                                                    # quando a conecção n foi finalizada
+
+        orig = (HOST, PORT)
+
+        tcp.bind(orig)
+        tcp.listen(1)
+
+        while True:                     # Cria duas THREADS, SOCKET
+            con, cliente = tcp.accept()
+            _thread.start_new_thread(self.conectado, tuple([con, cliente]))
+
+        tcp.close()
+
+    def conectado(self, con, cliente):
+        print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
+
+        self.set_text(cliente, self.users)
+
+        while True:
+            msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
+            if not msg: break
+
+            self.subject_list=self.subject_list+"\n"+msg.decode()
+
+            self.set_text(self.subject_list, self.subject)
+
+            print(msg.decode())
+            # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
+            #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
+            # else:
+            #     asd.set_asd(0);
+        print("Finalizando conexao do cliente", cliente)
+        con.close()
+        _thread.exit()
+
 
 
     def set_text(self, master=None, lab=None, master2=None, lab2=None):
@@ -136,7 +196,10 @@ class servidor_interface(Thread):
 
         return HOST, PORT
 
-
+root = Tk()
+servidor_interface(root)
+#jucaaa = servidor_interface(root)
+#_thread.start_new_thread(self.serv, "JUCSA")
 
 
 # instancia=Tk()

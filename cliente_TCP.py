@@ -18,6 +18,9 @@ msg = input()
 #print(type(msg))
 
 while msg != '\x18':
+
+	msg = "'{\"mensagem\": \"" + msg + "\", " + "\"host\": \"" + str(HOST) + "\", " + "\"port\": \"" + str(PORT) + "\"}'"
+
 	tcp.send(msg.encode())
 	msg = input()
 tcp.close()

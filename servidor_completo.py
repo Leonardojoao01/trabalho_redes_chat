@@ -23,6 +23,7 @@ class servidor_interface(Thread):
         #_thread.start_new_thread(self.serv, "JUCSA")
 
         #self.serv()
+        scrollbar = Scrollbar(root)
 
         self.fontePadrao = ("Arial", "15")
 
@@ -84,9 +85,14 @@ class servidor_interface(Thread):
         self.users_label = Label(self.segundoContainer, text="Pessoas Logadas", width=50)
         self.users_label.pack(padx=0, side=LEFT)
 
+                # Mostra a parte das conversas
+        #self.subject = Label(self.terceiroContainer, text="", bg="grey", width=90, height=20)
+        #self.subject.pack(padx=10, side=LEFT)
 
-        self.subject = Label(self.terceiroContainer, text="", bg="grey", width=90, height=20)
-        self.subject.pack(padx=10, side=LEFT)
+        self.subject = Listbox(self.terceiroContainer, yscrollcommand=scrollbar.set, bg="grey", width=90, height=20)
+
+        self.subject.pack(side=LEFT, fill=BOTH)
+        scrollbar.config(command=self.subject.yview)
 
         self.users = Label(self.terceiroContainer, text="", bg="white", width=30, height=20)
         self.users.pack(padx=50, side=LEFT)
@@ -152,6 +158,8 @@ class servidor_interface(Thread):
 
         tcp.close()
 
+
+    #--------Quando alguém conecta, fica vinculado a esse processo--------------
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
@@ -161,9 +169,12 @@ class servidor_interface(Thread):
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
 
-            self.subject_list=self.subject_list+"\n"+msg.decode()
+            #self.subject_list=self.subject_list+"\n"+msg.decode()
+            self.subject_list=msg.decode()
 
-            self.set_text(self.subject_list, self.subject)
+            self.subject.insert(0, self.subject_list)
+
+            #self.set_text(self.subject_list, self.subject)
 
             print(msg.decode())
             # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
@@ -198,6 +209,7 @@ class servidor_interface(Thread):
 
 root = Tk()
 servidor_interface(root)
+
 #jucaaa = servidor_interface(root)
 #_thread.start_new_thread(self.serv, "JUCSA")
 

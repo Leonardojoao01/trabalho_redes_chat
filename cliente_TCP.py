@@ -1,16 +1,16 @@
 import socket
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(('google.com', 0))
+s.connect(('google.com', 0))  # P/ pegar ip externo
 
 HOST = s.getsockname()[0]     # Endereco IP do Servidor
-PORT = 5000            # Porta que o Servidor esta
+PORT = 5000            		  # Porta que o Servidor esta
 
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 dest = (HOST, PORT)
 
 #print(HOST,PORT)
-tcp.connect(dest)
+tcp.connect(dest)				# Conecta ao servidor
 
 print('Para sair use CTRL+X\n')
 msg = input()

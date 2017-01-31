@@ -119,6 +119,7 @@ class servidor_interface():
     def connect_server(self):
 
         ip_server = self.ip_server.get()
+        self.get_ip()
 
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -127,11 +128,11 @@ class servidor_interface():
             HOST = ip_server     # Endereco IP do Servidor
             PORT = 5000            		  # Porta que o Servidor esta
 
-            tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             dest = (HOST, PORT)
 
-            #print(HOST,PORT)
-            tcp.connect(dest)
+            print(HOST,PORT)
+            self.tcp.connect(dest)
 
             self.subject.insert(0, "CONECTADO COM SUCESSO")
 
@@ -144,70 +145,61 @@ class servidor_interface():
 
     def set_subject(self):
 
-        subject_all = ""
-
-        subject_field = self.nome.get()
-
-        self.subject_list.append(subject_field+"\n")
-
-        for subject_unique in self.subject_list:
-             subject_all = subject_all + subject_unique #+ "\n"
-
-        self.subject['text'] = subject_all
-
-    #def connect_server_process_2(self):
+        msg = "'{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'"
 
 
-    def cliente(self, juca1, juca2):
-        #--------------------------Pega o IP local da máquina-------------------
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('google.com', 0))
+        self.tcp.send(msg.encode())
 
-        HOST = s.getsockname()[0]              # Endereco IP do Servidor
-        PORT = 5000                            # Porta que o Servidor esta
-        #-----------------------------------------------------------------------
-
-        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)   # Reconect, utilizada
-                                                    # quando a conecção n foi finalizada
-
-        orig = (HOST, PORT)
-
-        tcp.bind(orig)
-        tcp.listen(1)
-
-        while True:                     # Cria duas THREADS, SOCKET
-            con, cliente = tcp.accept()
-            _thread.start_new_thread(self.conectado, tuple([con, cliente]))
-
-        tcp.close()
+    # def cliente(self, juca1, juca2):
+    #     #--------------------------Pega o IP local da máquina-------------------
+    #     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #     s.connect(('google.com', 0))
+    #
+    #     HOST = s.getsockname()[0]              # Endereco IP do Servidor
+    #     PORT = 5000                            # Porta que o Servidor esta
+    #     #-----------------------------------------------------------------------
+    #
+    #     tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    #     tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)   # Reconect, utilizada
+    #                                                 # quando a conecção n foi finalizada
+    #
+    #     orig = (HOST, PORT)
+    #
+    #     tcp.bind(orig)
+    #     tcp.listen(1)
+    #
+    #     while True:                     # Cria duas THREADS, SOCKET
+    #         con, cliente = tcp.accept()
+    #         _thread.start_new_thread(self.conectado, tuple([con, cliente]))
+    #
+    #     tcp.close()
 
 
     #--------Quando alguém conecta, fica vinculado a esse processo--------------
-    def conectado(self, con, cliente):
-        print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
-
-        self.set_text(cliente, self.users)
-
-        while True:
-            msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
-            if not msg: break
-
-            #self.subject_list=self.subject_list+"\n"+msg.decode()
-            self.subject_list=msg.decode()
-
-            self.subject.insert(0, self.subject_list)
-
-            #self.set_text(self.subject_list, self.subject)
-
-            print(msg.decode())
-            # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
-            #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
-            # else:
-            #     asd.set_asd(0);
-        print("Finalizando conexao do cliente", cliente)
-        con.close()
-        _thread.exit()
+    # def conectado(self, con, cliente):
+    #     print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
+    #
+    #     self.set_text(cliente, self.users)
+    #
+    #     while True:
+    #         msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
+    #         if not msg: break
+    #
+    #         #self.subject_list=self.subject_list+"\n"+msg.decode()
+    #         self.subject_list=msg.decode()
+    #
+    #         self.subject.insert(0, self.subject_list)
+    #
+    #         #self.set_text(self.subject_list, self.subject)
+    #
+    #         print(msg.decode())
+    #         # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
+    #         #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
+    #         # else:
+    #         #     asd.set_asd(0);
+    #     print("Finalizando conexao do cliente", cliente)
+    #     con.close()
+    #     _thread.exit()
 
 
 
@@ -223,13 +215,13 @@ class servidor_interface():
     #--------------------------------------------Pode ser qq endereço externo---
     def get_ip(self):
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(('google.com', 0))
+        s_t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s_t.connect(('google.com', 0))
 
-        HOST = s.getsockname()[0]     # Endereco IP do Servidor
-        PORT = "5000"                 # Porta que o Servidor esta
+        self.HOST_local = s_t.getsockname()[0]     # Endereco IP do Servidor
+        self.PORT_local = "5000"                 # Porta que o Servidor esta
 
-        return HOST, PORT
+        #return HOST, PORT      Verificar se precisa finalizar a conexão s_t
 
 root = Tk()
 servidor_interface(root)

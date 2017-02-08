@@ -36,7 +36,7 @@ class servidor_interface():
         #-----------------------------------------------------------------------
 
         #-----------------------------------------------------------------------
-        self.title_label = Label(self.primeiroContainer, text="CHAT - Servidor")
+        self.title_label = Label(self.primeiroContainer, text="CHAT - Cliente")
         self.title_label["font"] = self.fontePadrao
         self.title_label.pack()
 

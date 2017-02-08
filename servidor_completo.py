@@ -169,10 +169,12 @@ class servidor_interface(Thread):
 
             print(msg.decode())
 
-            msg_desc = json.loads(str(msg.decode()))
+            print(type(msg.decode()))
+
+            msg_desc = json.loads(msg.decode())
 
 
-            print(msg_desc)
+            print(msg_desc["mensagem"])
 
         print("Finalizando conexao do cliente", cliente)
         con.close()

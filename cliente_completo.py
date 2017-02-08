@@ -139,7 +139,7 @@ class servidor_interface():
 
     def set_subject(self):
 
-        msg = {"mensagem":  self.nome.get(), "host": str(self.HOST_local), "port": str(self.PORT_local) }
+        msg = '{"mensagem":  "'+self.nome.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.PORT_local)+'" }'
 
         #msg = '{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'
         #parse_msg = json.loads(msg)
@@ -148,7 +148,7 @@ class servidor_interface():
         #print(msg["mensagem"])
 
         #print(parse_msg['mensagem'])
-        msg = str(msg)
+        #msg = str(msg)
 
         self.tcp.send(msg.encode())
 

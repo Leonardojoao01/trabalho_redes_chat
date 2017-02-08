@@ -1,6 +1,7 @@
 from tkinter import *
 import _thread
 import socket
+import json
 
 
 class servidor_interface():
@@ -138,8 +139,16 @@ class servidor_interface():
 
     def set_subject(self):
 
-        msg = "'{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'"
+        msg = {"mensagem":  self.nome.get(), "host": str(self.HOST_local), "port": str(self.PORT_local) }
 
+        #msg = '{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'
+        #parse_msg = json.loads(msg)
+
+
+        #print(msg["mensagem"])
+
+        #print(parse_msg['mensagem'])
+        msg = str(msg)
 
         self.tcp.send(msg.encode())
 

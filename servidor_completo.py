@@ -4,6 +4,7 @@ from tkinter import *
 #from threading import Thread
 import _thread
 import socket
+import json
 
 from servidor import *
 
@@ -13,16 +14,6 @@ class servidor_interface(Thread):
     subject_list = ""
     def __init__(self, root=None):
 
-        #-----São as frames(áreas), utilizadas para salvar conteúdo dentro delas-----
-        #subject_list = []
-        #Thread.__init__(self)
-
-        #object_servidor = servidor()
-        #object_servidor.start()
-
-        #_thread.start_new_thread(self.serv, "JUCSA")
-
-        #self.serv()
         scrollbar = Scrollbar(root)
 
         self.fontePadrao = ("Arial", "15")
@@ -177,10 +168,12 @@ class servidor_interface(Thread):
             #self.set_text(self.subject_list, self.subject)
 
             print(msg.decode())
-            # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
-            #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
-            # else:
-            #     asd.set_asd(0);
+
+            msg_desc = json.loads(str(msg.decode()))
+
+
+            print(msg_desc)
+
         print("Finalizando conexao do cliente", cliente)
         con.close()
         _thread.exit()

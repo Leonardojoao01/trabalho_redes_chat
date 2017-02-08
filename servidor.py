@@ -46,25 +46,7 @@ class servidor(Thread):
             self.juca.set_text(msg.decode(),"subject")
 
             print(msg.decode())
-            # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
-            #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
-            # else:
-            #     asd.set_asd(0);
+
         print("Finalizando conexao do cliente", cliente)
         con.close()
         _thread.exit()
-
-#-------------------------------------------------------------------------------
-# instancia=Tk()
-# # servidor_interface(instancia)
-# # instancia.mainloop()
-# jucaaa = servidor_interface(instancia)
-# jucaaa.start()
-# #instancia.mainloop()
-# #uol = _thread.start_new_thread(jucaaa = servidor_interface(instancia))
-# #_thread.start_new_thread(object_servidor = servidor(jucaaa))
-# object_servidor = servidor(jucaaa)
-# object_servidor.start()
-#
-#
-# instancia.mainloop()

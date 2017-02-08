@@ -12,6 +12,7 @@ from servidor import *
 
 class servidor_interface(Thread):
     subject_list = ""
+    lista_clientes = []
     def __init__(self, root=None):
 
         scrollbar = Scrollbar(root)
@@ -154,7 +155,9 @@ class servidor_interface(Thread):
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
-        self.set_text(cliente, self.users)
+        self.lista_clientes.append(str(cliente)) 
+        #self.set_text(cliente, self.users)
+        print(self.lista_clientes)
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
@@ -177,6 +180,8 @@ class servidor_interface(Thread):
             print(msg_desc["mensagem"])
 
         print("Finalizando conexao do cliente", cliente)
+        self.lista_clientes.remove(str(cliente))
+        print(self.lista_clientes)
         con.close()
         _thread.exit()
 

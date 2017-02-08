@@ -156,7 +156,7 @@ class servidor_interface(Thread):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
         self.lista_clientes.append(str(cliente)) 
-        #self.set_text(cliente, self.users)
+        self.set_text(self.lista_clientes, self.users)
         print(self.lista_clientes)
 
         while True:

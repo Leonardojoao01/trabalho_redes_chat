@@ -129,9 +129,9 @@ class servidor_interface():
 
             #msg = "'{\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\" + \"host_juca\": \"" + str(self.HOST) + "\"}'"
 
-            msg = str(self.HOST)
+            #msg = str(self.HOST)
 
-            self.tcp.send(msg.encode())
+            #self.tcp.send(msg.encode())
 
         except:
             print("Não conectado --  ERRO DE ENVIO")

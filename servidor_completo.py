@@ -5,6 +5,7 @@ from tkinter import *
 import _thread
 import socket
 import json
+import re
 
 from servidor import *
 
@@ -150,6 +151,18 @@ class servidor_interface(Thread):
 
         tcp.close()
 
+    #------- host -----
+    #def get_clientes(self, host_cliente):
+    
+
+    #def find(str, ch):
+     #   indice = 0
+      #  while indice < len(str):
+       #     if str[indice] == :
+        #        return indice
+         #   indice = indice + 1
+        #return -1 
+
 
     #--------Quando alguém conecta, fica vinculado a esse processo--------------
     def conectado(self, con, cliente):
@@ -158,7 +171,15 @@ class servidor_interface(Thread):
         self.lista_clientes.append(str(cliente)) 
         self.set_text(self.lista_clientes, self.users)
         print(self.lista_clientes)
+       
+        for x in self.lista_clientes:
+            for i in len(self.lista_clientes):
+                print(re.findall(r"'(.*?)'", x, re.DOTALL[i]))
+            
 
+        
+
+        
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
@@ -182,6 +203,7 @@ class servidor_interface(Thread):
         print("Finalizando conexao do cliente", cliente)
         self.lista_clientes.remove(str(cliente))
         print(self.lista_clientes)
+
         con.close()
         _thread.exit()
 
@@ -206,6 +228,37 @@ class servidor_interface(Thread):
         PORT = "5000"                 # Porta que o Servidor esta
 
         return HOST, PORT
+
+    #-----------------------Enviar mensagens para vários---------------------------#
+    def connect_server(self):
+
+        ip_server = self.ip_server.get()
+        self.get_ip()
+        for x in self.lista_clientes:
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+                HOST = x[0]     # Endereco IP do Servidor
+                PORT = 5000                   # Porta que o Servidor esta
+
+                self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                dest = (HOST, PORT)
+
+                print(HOST,PORT)
+                self.tcp.connect(dest)
+
+                self.subject.insert(0, "CONECTADO COM SUCESSO")
+
+                #msg = "'{\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\" + \"host_juca\": \"" + str(self.HOST) + "\"}'"
+
+                #msg = str(self.HOST)
+
+                #self.tcp.send(msg.encode())
+
+            except:
+                print("Não conectado --  ERRO DE ENVIO")
+
+#---------------------------------------#
 
 root = Tk()
 servidor_interface(root)

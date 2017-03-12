@@ -156,15 +156,15 @@ class servidor_interface(Thread):
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
-        self.lista_clientes.append(str(cliente)) 
+        self.lista_clientes.append(str(cliente))
         self.set_text(self.lista_clientes, self.users)
         print(self.lista_clientes)
-       
+
         for x in self.lista_clientes:
             ip_clientes =  re.findall(r"'(.*?)'", x, re.DOTALL)
             print(ip_clientes)
-        
-           
+
+
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
@@ -184,16 +184,22 @@ class servidor_interface(Thread):
 
 
             print(msg_desc["mensagem"])
+            #======CHAMAR FUNÇÃO P/ ENVIAR MENSAGEM========
+            self.connect_server("192.168.1.109",4000,"juca")
+            #==============================================
 
         print("Finalizando conexao do cliente", cliente)
+
         for i in self.ip_clientes:
-            if self.cliente[0] in self.ip_clientes: 
+            if self.cliente[0] in self.ip_clientes:
                 self.ip_clientes.remove(cliente[0])
+
         self.lista_clientes.remove(str(cliente))
+
         print(self.ip_clientes, "Ativos agora")
-        
+
         print(self.lista_clientes)
-        
+
 
         con.close()
         _thread.exit()
@@ -221,33 +227,34 @@ class servidor_interface(Thread):
         return HOST, PORT
 
     #-----------------------Enviar mensagens para vários---------------------------#
-    def connect_server(self):
+    def connect_server(self, host, port, text):
 
-        ip_server = self.ip_server.get()
-        self.get_ip()
-        for x in self.lista_clientes:
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        print("JUCA", host, port, text)
 
-                HOST = x[0]     # Endereco IP do Servidor
-                PORT = 5000                   # Porta que o Servidor esta
+        try:
+            #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-                self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                dest = (HOST, PORT)
+            HOST = host     # Endereco IP do Servidor
+            PORT = int(port)                   # Porta que o Servidor esta
+            tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            dest = (HOST, PORT)
 
-                print(HOST,PORT)
-                self.tcp.connect(dest)
+            print("JUCAAAAA", HOST,PORT)
+            tcp2.connect(dest)
 
-                self.subject.insert(0, "CONECTADO COM SUCESSO")
+            #self.subject.insert(0, "CONECTADO COM SUCESSO")
 
                 #msg = "'{\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\" + \"host_juca\": \"" + str(self.HOST) + "\"}'"
 
                 #msg = str(self.HOST)
 
-                #self.tcp.send(msg.encode())
+            tcp2.send(text.encode())
+            #tcp2.close()
 
-            except:
-                print("Não conectado --  ERRO DE ENVIO")
+        except:
+            print("ERRO DE ENVIO")
+
+
 
 #---------------------------------------#
 

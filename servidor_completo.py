@@ -14,6 +14,7 @@ from servidor import *
 class servidor_interface(Thread):
     subject_list = ""
     lista_clientes = []
+    ip_clientes = []
     def __init__(self, root=None):
 
         scrollbar = Scrollbar(root)
@@ -151,20 +152,7 @@ class servidor_interface(Thread):
 
         tcp.close()
 
-    #------- host -----
-    #def get_clientes(self, host_cliente):
-    
-
-    #def find(str, ch):
-     #   indice = 0
-      #  while indice < len(str):
-       #     if str[indice] == :
-        #        return indice
-         #   indice = indice + 1
-        #return -1 
-
-
-    #--------Quando alguém conecta, fica vinculado a esse processo--------------
+      #--------Quando alguém conecta, fica vinculado a esse processo--------------
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
@@ -173,13 +161,10 @@ class servidor_interface(Thread):
         print(self.lista_clientes)
        
         for x in self.lista_clientes:
-            for i in len(self.lista_clientes):
-                print(re.findall(r"'(.*?)'", x, re.DOTALL[i]))
-            
-
+            ip_clientes =  re.findall(r"'(.*?)'", x, re.DOTALL)
+            print(ip_clientes)
         
-
-        
+           
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
@@ -201,8 +186,14 @@ class servidor_interface(Thread):
             print(msg_desc["mensagem"])
 
         print("Finalizando conexao do cliente", cliente)
+        for i in self.ip_clientes:
+            if self.cliente[0] in self.ip_clientes: 
+                self.ip_clientes.remove(cliente[0])
         self.lista_clientes.remove(str(cliente))
+        print(self.ip_clientes, "Ativos agora")
+        
         print(self.lista_clientes)
+        
 
         con.close()
         _thread.exit()

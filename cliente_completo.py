@@ -52,13 +52,15 @@ class servidor_interface():
         self.ip_server = Entry(self.segContainer)
         self.ip_server["width"] = 15
         self.ip_server.pack(side=LEFT)
+        #=======================================================================
 
         self.port_label = Label(self.segContainer, text="Host: ")
         self.port_label.pack(padx=0, side=LEFT)
 
-        self.port = Label(self.segContainer, text="5000")
-        self.port.pack(padx=0, side=LEFT)
-
+        self.port_l = Entry(self.segContainer)
+        self.port_l["width"] = 15
+        self.port_l.pack(side=LEFT)
+        #=======================================================================
         self.connect = Button(self.segContainer)
         self.connect["text"] = "Enviar"
         self.connect["font"] = ("Calibri", "8")
@@ -103,7 +105,7 @@ class servidor_interface():
         self.enviar["command"] = self.set_subject
         self.enviar.pack()
 
-        _thread.start_new_thread(self.serv, tuple(["null","null"]))
+        #_thread.start_new_thread(self.serv, tuple(["null","null"]))
 
         root.mainloop()
 
@@ -132,6 +134,8 @@ class servidor_interface():
             #msg = str(self.HOST)
 
             #self.tcp.send(msg.encode())
+            _thread.start_new_thread(self.serv, tuple(["null","null"]))
+
 
         except:
             print("Não conectado --  ERRO DE ENVIO")
@@ -139,7 +143,7 @@ class servidor_interface():
 
     def set_subject(self):
 
-        msg = '{"mensagem":  "'+self.nome.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.PORT_local)+'" }'
+        msg = '{"mensagem":  "'+self.nome.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
 
         #msg = '{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'
         #parse_msg = json.loads(msg)
@@ -180,7 +184,7 @@ class servidor_interface():
 
         self.HOST = s.getsockname()[0]              # Endereco IP do Servidor
         #print(self.HOST)
-        PORT = 5000                            # Porta que o Servidor esta
+        PORT = int(self.port_l.get())                            # Porta que o Servidor esta
         #-----------------------------------------------------------------------
 
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

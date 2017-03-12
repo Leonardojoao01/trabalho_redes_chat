@@ -153,7 +153,7 @@ class servidor_interface(Thread):
 
     #------- host -----
     #def get_clientes(self, host_cliente):
-    
+
 
     #def find(str, ch):
      #   indice = 0
@@ -161,25 +161,25 @@ class servidor_interface(Thread):
        #     if str[indice] == :
         #        return indice
          #   indice = indice + 1
-        #return -1 
+        #return -1
 
 
     #--------Quando alguém conecta, fica vinculado a esse processo--------------
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
-        self.lista_clientes.append(str(cliente)) 
+        self.lista_clientes.append(str(cliente))
         self.set_text(self.lista_clientes, self.users)
         print(self.lista_clientes)
-       
-        for x in self.lista_clientes:
-            for i in len(self.lista_clientes):
-                print(re.findall(r"'(.*?)'", x, re.DOTALL[i]))
-            
 
-        
+        # for x in self.lista_clientes:
+        #     for i in len(self.lista_clientes):
+        #         print(re.findall(r"'(.*?)'", x, re.DOTALL[i]))
 
-        
+
+
+
+
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break

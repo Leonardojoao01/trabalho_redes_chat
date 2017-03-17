@@ -6,6 +6,7 @@ import _thread
 import socket
 import json
 import re
+import string
 
 from servidor import *
 
@@ -15,6 +16,9 @@ class servidor_interface(Thread):
     subject_list = ""
     lista_clientes = []
     ip_clientes = []
+    list_ips = []
+    list_ports = []
+    list_port_rem = []
     def __init__(self, root=None):
 
         scrollbar = Scrollbar(root)
@@ -156,50 +160,45 @@ class servidor_interface(Thread):
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
-        self.lista_clientes.append(str(cliente))
-        self.set_text(self.lista_clientes, self.users)
-        print(self.lista_clientes)
+        self.list_ips.append(cliente[0])
+        self.list_port_rem.append(cliente[1])
+        print(self.list_ips, self.list_port_rem)
 
-        for x in self.lista_clientes:
-            ip_clientes =  re.findall(r"'(.*?)'", x, re.DOTALL)
-            print(ip_clientes)
+        checker = True;
 
+        #=======================================================================
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
 
-            #self.subject_list=self.subject_list+"\n"+msg.decode()
+            #---------------Seta no CONVERSA o a mensagem recebida--------------
+            self.subject_list=self.subject_list+"\n"+msg.decode()
             self.subject_list=msg.decode()
-
-            self.subject.insert(0, self.subject_list)
-
-            #self.set_text(self.subject_list, self.subject)
-
-            print(msg.decode())
-
-            print(type(msg.decode()))
+            self.subject.insert(0, self.subject_list)   # Insere o texto no campo
+            #-------------------------------------------------------------------
 
             msg_desc = json.loads(msg.decode())
 
-
-            print(msg_desc["mensagem"])
+            if checker:                   # Usado para salvar a porta do cliente
+                self.list_ports.append(msg_desc["port"])
+                checker=False
+            else:
             #======CHAMAR FUNÇÃO P/ ENVIAR MENSAGEM========
-            self.connect_server("192.168.1.109",4000,"juca")
+                self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"])
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
 
-        for i in self.ip_clientes:
-            if self.cliente[0] in self.ip_clientes:
-                self.ip_clientes.remove(cliente[0])
+        # Encontra a posicao da PORT, assim o indice é igual em todas as listas
+        posicao = self.list_port_rem.index(cliente[1])
 
-        self.lista_clientes.remove(str(cliente))
+        self.list_ips.pop(posicao)
+        self.list_ports.pop(posicao)
+        self.list_port_rem.pop(posicao)
+        #-----------------------------------------------------------------------
 
-        print(self.ip_clientes, "Ativos agora")
-
-        print(self.lista_clientes)
-
+        print(self.list_ips, self.list_port_rem, self.list_ports)
 
         con.close()
         _thread.exit()
@@ -227,32 +226,61 @@ class servidor_interface(Thread):
         return HOST, PORT
 
     #-----------------------Enviar mensagens para vários---------------------------#
-    def connect_server(self, host, port, text):
+    def connect_server(self, host, port, port_un,text):
 
-        print("JUCA", host, port, text)
+        #print("JUCA", host, port, text)
+        pos_port = 0;
 
-        try:
-            #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        for env_host in self.list_ips:
+            print("ENV IP:", env_host, self.list_ports)
+            posicao = self.list_port_rem.index(port_un)
+            #pos_port =
 
-            HOST = host     # Endereco IP do Servidor
-            PORT = int(port)                   # Porta que o Servidor esta
-            tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            dest = (HOST, PORT)
+            try:
+                HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
+                #PORT = int(self.list_ports[posicao])                 # Porta que o Servidor esta
+                PORT = int(self.list_ports[pos_port])
+                #print("HOST:PORT:TEXT", HOST, PORT, text)
 
-            print("JUCAAAAA", HOST,PORT)
-            tcp2.connect(dest)
+                tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                dest2 = (HOST, PORT)
+                tcp2.connect(dest2)
+                tcp2.send(text.encode())
 
-            #self.subject.insert(0, "CONECTADO COM SUCESSO")
+            except:
+                print("ERRO DE ENVIO")
 
-                #msg = "'{\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\" + \"host_juca\": \"" + str(self.HOST) + "\"}'"
+            pos_port = pos_port+1
 
-                #msg = str(self.HOST)
 
-            tcp2.send(text.encode())
-            #tcp2.close()
+    def ip_and_port(self, cliente):
+        #print("CLI", type(cliente))
+        #print("CLI", cliente[0])
+        #print("CLI", cliente[1])
+        # ip_juca = ""
+        # po_juca = ""
+        # cont = 0
+        # min_host = str(cliente).find("'")+1
+        # max_host = str(cliente).find(",")-2
+        # print(min_host, max_host)
+        #
+        # min_port = str(cliente).find(" ")+1
+        # max_port = str(cliente).find(")")-1
+        #
+        # print("NUN: ",len(cliente))
+        #
+        # for letra in cliente:
+        #     if cont >= min_host and cont <= max_host :
+        #         ip_juca = ip_juca + letra
+        #     if cont >= min_port and cont <= max_port :
+        #         po_juca = po_juca + letra
+        #
+        #     cont=cont+1
+        #     print(cont)
+        #
+        # print("IP:PORT", ip_juca, po_juca)
 
-        except:
-            print("ERRO DE ENVIO")
+        return cliente[0],cliente[1]
 
 
 

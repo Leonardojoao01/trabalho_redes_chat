@@ -135,7 +135,9 @@ class servidor_interface():
 
             #msg = str(self.HOST)
 
-            #self.tcp.send(msg.encode())
+            msg = '{"mensagem":  "FOI", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
+            self.tcp.send(msg.encode())
+
             _thread.start_new_thread(self.serv, tuple(["null","null"]))
 
         except:

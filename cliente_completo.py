@@ -46,25 +46,29 @@ class servidor_interface():
         self.host_label = Label(self.segContainer, text="IP: ")
         self.host_label.pack(padx=0, side=LEFT)
 
-        #self.host = Label(self.segContainer, text="")       # AQUI
-        #self.host.pack(padx=0, side=LEFT)
-
         self.ip_server = Entry(self.segContainer)
         self.ip_server["width"] = 15
         self.ip_server.pack(side=LEFT)
 
         self.port_label = Label(self.segContainer, text="Host: ")
         self.port_label.pack(padx=0, side=LEFT)
-        #=======================================================================
+
         self.port_l = Entry(self.segContainer)
         self.port_l["width"] = 15
         self.port_l.pack(side=LEFT)
+
+        self.login_label = Label(self.segContainer, text="Login: ")
+        self.login_label.pack(padx=0, side=LEFT)
+
+        self.login = Entry(self.segContainer)
+        self.login["width"] = 8
+        self.login.pack(side=LEFT)
 
         #self.port = Label(self.segContainer, text="5000")
         #self.port.pack(padx=0, side=LEFT)
         #=======================================================================
         self.connect = Button(self.segContainer)
-        self.connect["text"] = "Enviar"
+        self.connect["text"] = "Conectar"
         self.connect["font"] = ("Calibri", "8")
         self.connect["width"] = 12
         self.connect["command"] = self.connect_server
@@ -94,9 +98,18 @@ class servidor_interface():
         self.users.pack(padx=50, side=LEFT)
 
         #-----------------------------------------------------------------------
+        self.peaple_label = Label(self.quartoContainer, text="Usuário")#, width=90)
+        self.peaple_label.pack(padx=0, side=LEFT)
+
+        self.select_peaple = Entry(self.quartoContainer)
+        self.select_peaple["width"] = 10
+        self.select_peaple.pack(side=LEFT)
+
+        self.text_label = Label(self.quartoContainer, text="Assunto")#, width=90)
+        self.text_label.pack(padx=0, side=LEFT)
 
         self.nome = Entry(self.quartoContainer)
-        self.nome["width"] = 100
+        self.nome["width"] = 90
         self.nome.pack(side=LEFT)
 
         #----------------------------------------------------
@@ -131,11 +144,7 @@ class servidor_interface():
 
             self.subject.insert(0, "CONECTADO COM SUCESSO")
 
-            #msg = "'{\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\" + \"host_juca\": \"" + str(self.HOST) + "\"}'"
-
-            #msg = str(self.HOST)
-
-            msg = '{"mensagem":  "FOI", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
+            msg = '{"mensagem":  "'+self.login.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
             self.tcp.send(msg.encode())
 
             _thread.start_new_thread(self.serv, tuple(["null","null"]))
@@ -146,16 +155,7 @@ class servidor_interface():
 
     def set_subject(self):
 
-        msg = '{"mensagem":  "'+self.nome.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
-
-        #msg = '{\"mensagem\": \"" + self.nome.get() + "\", " + "\"host\": \"" + str(self.HOST_local) + "\", " + "\"port\": \"" + str(self.PORT_local) + "\"}'
-        #parse_msg = json.loads(msg)
-
-
-        #print(msg["mensagem"])
-
-        #print(parse_msg['mensagem'])
-        #msg = str(msg)
+        msg = '{"mensagem":  "'+self.nome.get()+'", "destinatario": "'+self.select_peaple.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
 
         self.tcp.send(msg.encode())
 

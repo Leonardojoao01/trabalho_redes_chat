@@ -110,15 +110,10 @@ class servidor_interface(Thread):
         self.enviar["command"] = self.set_subject
         self.enviar.pack()
 
-
-
-        #_thread.start_new_thread(self.serv, "JUCSA")
-
+        # Instancia uma thread para receber as mensagens dos clientes
         _thread.start_new_thread(self.serv, tuple(["null","null"]))
 
         root.mainloop()
-
-        #self.set_text("juca", self.conversa)
 
     def set_subject(self):
 
@@ -151,7 +146,7 @@ class servidor_interface(Thread):
         tcp.bind(orig)
         tcp.listen(1)
 
-        while True:                     # Cria duas THREADS, SOCKET
+        while True:         # Cria THREAD para ficar em um loop até cliente se desconectar
             con, cliente = tcp.accept()
             _thread.start_new_thread(self.conectado, tuple([con, cliente]))
 
@@ -159,11 +154,9 @@ class servidor_interface(Thread):
 
       #--------Quando alguém conecta, fica vinculado a esse processo--------------
     def conectado(self, con, cliente):
-        print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
-
-
-        #self.lista_clientes.append(str(cliente))
-        #self.set_text(self.list_users, self.users)
+        print("Conectado por", cliente)
+        # Cliente[0] = IP do cliente conectado
+        # Cliente[1] = ID da conexão
 
         self.list_ips.append(cliente[0])
         self.list_port_rem.append(cliente[1])
@@ -177,34 +170,41 @@ class servidor_interface(Thread):
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
             if not msg: break
 
-            #---------------Seta no CONVERSA o a mensagem recebida--------------
-            self.subject_list=self.subject_list+"\n"+msg.decode()
-            self.subject_list=msg.decode()
+            #---------------Seta no campo CONVERSA a mensagem recebida--------------
+            self.subject_list=self.subject_list+"\n"+msg.decode()   # Concatena a mensagem alterior com a nova
+            self.subject_list=msg.decode()              # Leitura da mensagem
             self.subject.insert(0, self.subject_list)   # Insere o texto no campo
+            # OBS: Não foi colocado o "msg.decode()" direto na função insert, pois gera um erro
             #-------------------------------------------------------------------
 
             msg_desc = json.loads(msg.decode())
 
-            if checker:                   # Usado para salvar a porta do cliente
+            # Utilizado para entrar somente uma unica vez a cada novo cliente conectado
+            # Função principal desse trecho do código é conectar diversos clientes
+            # no mesmo computador, pois o IP é o mesmo e devemos realizar a analogia
+            # entre as tabelas. Assim, diferenciamos pelo id da conexão cliente[1]
+            # realizando a analogia com a mesma posicao de outra tabela referente a porta
+            # dos clientes
+            if checker:
                 self.list_ports.append(msg_desc["port"])
-                self.list_users.append(msg_desc["mensagem"])
+                self.list_users.append(str(msg_desc["mensagem"]))
                 self.set_text(self.list_users, self.users)
                 checker=False
             else:
-            #======CHAMAR FUNÇÃO P/ ENVIAR MENSAGEM========
                 self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"],msg_desc["destinatario"])
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
-        #self.lista_clientes.remove(str(cliente))
 
-        # Encontra a posicao da PORT, assim o indice é igual em todas as listas
+        # Encontra a posicao na tabela de id de conexao(cliente[1])
+        # Dessa forma é possivel remover todos os dados referente ao mesmo cliente
+        # em todas as listas
         posicao = self.list_port_rem.index(cliente[1])
 
-        self.list_ips.pop(posicao)
-        self.list_ports.pop(posicao)
-        self.list_port_rem.pop(posicao)
-        self.list_users.pop(posicao)
+        self.list_ips.pop(posicao)          # IP do cliente
+        self.list_ports.pop(posicao)        # PORTA do cliente
+        self.list_port_rem.pop(posicao)     # ID de conexão
+        self.list_users.pop(posicao)        # NOME do usuário conectado
         self.set_text(self.list_users, self.users)
         #-----------------------------------------------------------------------
 
@@ -235,7 +235,7 @@ class servidor_interface(Thread):
 
         return HOST, PORT
 
-    #-----------------------Enviar mensagens para vários---------------------------#
+    #-----------------------Enviar mensagens para vários-----------------------#
     def connect_server(self, host, port, port_un,text, dest):
 
         #print("JUCA", host, port, text)
@@ -264,48 +264,19 @@ class servidor_interface(Thread):
 
                 pos_port = pos_port+1
         else:
-            posicao = self.list_users.index(dest)
+
+            posicao = self.list_users.index(str(dest))
+            #print("DEST:POS:PORT ", dest, posicao)
+
             try:
                 HOST = str(self.list_ips[posicao])
-                PORT = int(self.list_ports[pos_port])
+                PORT = int(self.list_ports[posicao])
                 tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 dest2 = (HOST, PORT)
                 tcp2.connect(dest2)
                 tcp2.send(text.encode())
             except:
                 print("ERRO DE ENVIO")
-
-
-    def ip_and_port(self, cliente):
-        #print("CLI", type(cliente))
-        #print("CLI", cliente[0])
-        #print("CLI", cliente[1])
-        # ip_juca = ""
-        # po_juca = ""
-        # cont = 0
-        # min_host = str(cliente).find("'")+1
-        # max_host = str(cliente).find(",")-2
-        # print(min_host, max_host)
-        #
-        # min_port = str(cliente).find(" ")+1
-        # max_port = str(cliente).find(")")-1
-        #
-        # print("NUN: ",len(cliente))
-        #
-        # for letra in cliente:
-        #     if cont >= min_host and cont <= max_host :
-        #         ip_juca = ip_juca + letra
-        #     if cont >= min_port and cont <= max_port :
-        #         po_juca = po_juca + letra
-        #
-        #     cont=cont+1
-        #     print(cont)
-        #
-        # print("IP:PORT", ip_juca, po_juca)
-
-        return cliente[0],cliente[1]
-
-
 
 #---------------------------------------#
 

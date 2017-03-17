@@ -227,7 +227,7 @@ class servidor_interface():
 
             #self.set_text(self.subject_list, self.subject)
 
-            print(msg.decode())
+            print("GG ", msg.decode())
             # if msg.decode() == "aba":       # Variável utilizada para ativar a veri-
             #     asd.set_asd(1);             #cação, ADD/REMOVENDO sensores do CRON
             # else:

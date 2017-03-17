@@ -171,7 +171,7 @@ class servidor_interface(Thread):
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
-            if not msg: break
+            if not msg: continue
 
             #---------------Seta no CONVERSA o a mensagem recebida--------------
             self.subject_list=self.subject_list+"\n"+msg.decode()

@@ -214,7 +214,7 @@ class servidor_interface():
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
-            if not msg: break
+            if not msg: continue
 
             #self.subject_list=self.subject_list+"\n"+msg.decode()
             self.subject_list=msg.decode()

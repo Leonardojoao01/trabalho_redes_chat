@@ -19,6 +19,7 @@ class servidor_interface(Thread):
     list_ips = []
     list_ports = []
     list_port_rem = []
+    list_users = []
     def __init__(self, root=None):
 
         scrollbar = Scrollbar(root)
@@ -182,10 +183,11 @@ class servidor_interface(Thread):
 
             if checker:                   # Usado para salvar a porta do cliente
                 self.list_ports.append(msg_desc["port"])
+                self.list_users.append(msg_desc["mensagem"])
                 checker=False
             else:
             #======CHAMAR FUNÇÃO P/ ENVIAR MENSAGEM========
-                self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"])
+                self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"],msg_desc["destinatario"])
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
@@ -196,6 +198,7 @@ class servidor_interface(Thread):
         self.list_ips.pop(posicao)
         self.list_ports.pop(posicao)
         self.list_port_rem.pop(posicao)
+        self.list_users.pop(posicao)
         #-----------------------------------------------------------------------
 
         print(self.list_ips, self.list_port_rem, self.list_ports)
@@ -226,31 +229,44 @@ class servidor_interface(Thread):
         return HOST, PORT
 
     #-----------------------Enviar mensagens para vários---------------------------#
-    def connect_server(self, host, port, port_un,text):
+    def connect_server(self, host, port, port_un,text, dest):
 
         #print("JUCA", host, port, text)
         pos_port = 0;
 
-        for env_host in self.list_ips:
-            print("ENV IP:", env_host, self.list_ports)
-            posicao = self.list_port_rem.index(port_un)
-            #pos_port =
+        if dest == "all":
 
+            for env_host in self.list_ips:
+                print("ENV IP:", env_host, self.list_ports)
+                posicao = self.list_port_rem.index(port_un)
+                #pos_port =
+
+                try:
+                    HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
+                    #PORT = int(self.list_ports[posicao])                 # Porta que o Servidor esta
+                    PORT = int(self.list_ports[pos_port])
+                    #print("HOST:PORT:TEXT", HOST, PORT, text)
+
+                    tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    dest2 = (HOST, PORT)
+                    tcp2.connect(dest2)
+                    tcp2.send(text.encode())
+
+                except:
+                    print("ERRO DE ENVIO")
+
+                pos_port = pos_port+1
+        else:
+            posicao = self.list_users.index(dest)
             try:
-                HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
-                #PORT = int(self.list_ports[posicao])                 # Porta que o Servidor esta
+                HOST = str(self.list_ips[posicao])
                 PORT = int(self.list_ports[pos_port])
-                #print("HOST:PORT:TEXT", HOST, PORT, text)
-
                 tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 dest2 = (HOST, PORT)
                 tcp2.connect(dest2)
                 tcp2.send(text.encode())
-
             except:
                 print("ERRO DE ENVIO")
-
-            pos_port = pos_port+1
 
 
     def ip_and_port(self, cliente):

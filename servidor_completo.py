@@ -161,6 +161,10 @@ class servidor_interface(Thread):
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
+
+        #self.lista_clientes.append(str(cliente))
+        #self.set_text(self.list_users, self.users)
+
         self.list_ips.append(cliente[0])
         self.list_port_rem.append(cliente[1])
         print(self.list_ips, self.list_port_rem)
@@ -171,7 +175,7 @@ class servidor_interface(Thread):
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
-            if not msg: continue
+            if not msg: break
 
             #---------------Seta no CONVERSA o a mensagem recebida--------------
             self.subject_list=self.subject_list+"\n"+msg.decode()
@@ -184,6 +188,7 @@ class servidor_interface(Thread):
             if checker:                   # Usado para salvar a porta do cliente
                 self.list_ports.append(msg_desc["port"])
                 self.list_users.append(msg_desc["mensagem"])
+                self.set_text(self.list_users, self.users)
                 checker=False
             else:
             #======CHAMAR FUNÇÃO P/ ENVIAR MENSAGEM========
@@ -191,6 +196,7 @@ class servidor_interface(Thread):
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
+        #self.lista_clientes.remove(str(cliente))
 
         # Encontra a posicao da PORT, assim o indice é igual em todas as listas
         posicao = self.list_port_rem.index(cliente[1])
@@ -199,6 +205,7 @@ class servidor_interface(Thread):
         self.list_ports.pop(posicao)
         self.list_port_rem.pop(posicao)
         self.list_users.pop(posicao)
+        self.set_text(self.list_users, self.users)
         #-----------------------------------------------------------------------
 
         print(self.list_ips, self.list_port_rem, self.list_ports)

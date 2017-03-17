@@ -43,14 +43,14 @@ class servidor_interface():
 
         #-------Mostra o ip do Servidor, onde os clientes devem conectar--------
         #-----------------------------------------------------------------------
-        self.host_label = Label(self.segContainer, text="IP: ")
+        self.host_label = Label(self.segContainer, text="HOST Servidor: ")
         self.host_label.pack(padx=0, side=LEFT)
 
         self.ip_server = Entry(self.segContainer)
         self.ip_server["width"] = 15
         self.ip_server.pack(side=LEFT)
 
-        self.port_label = Label(self.segContainer, text="Host: ")
+        self.port_label = Label(self.segContainer, text="PORT Cliente: ")
         self.port_label.pack(padx=0, side=LEFT)
 
         self.port_l = Entry(self.segContainer)
@@ -150,12 +150,16 @@ class servidor_interface():
             _thread.start_new_thread(self.serv, tuple(["null","null"]))
 
         except:
-            print("Não conectado --  ERRO DE ENVIO")
+            self.subject.insert(0, "ERRO AO CONECTAR")
+            #print("Não conectado --  ERRO DE ENVIO")
 
 
-    def set_subject(self):
+    def set_subject(self):  # Envia a mensagem para o servidor e set no campo o que foi enviando
 
         msg = '{"mensagem":  "'+self.nome.get()+'", "destinatario": "'+self.select_peaple.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
+
+        self.subject.insert(0, self.nome.get())
+        self.subject.insert(0, "DE: "+self.login.get() +" PARA: " + self.select_peaple.get())
 
         self.tcp.send(msg.encode())
 

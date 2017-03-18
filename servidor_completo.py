@@ -7,6 +7,7 @@ import socket
 import json
 import re
 import string
+import time
 
 from servidor import *
 
@@ -189,9 +190,12 @@ class servidor_interface(Thread):
                 self.list_ports.append(msg_desc["port"])
                 self.list_users.append(str(msg_desc["mensagem"]))
                 self.set_text(self.list_users, self.users)
+                #self.send_all()
+                #self.connect_server("192.168.15.9","4000",cliente[1],"juca","all")
+
                 checker=False
             else:
-                self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"],msg_desc["destinatario"])
+                self.connect_server(msg_desc["host"],msg_desc["port"],cliente[1],msg_desc["mensagem"],msg_desc["destinatario"],cliente[1])
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
@@ -234,12 +238,41 @@ class servidor_interface(Thread):
         PORT = "5000"                 # Porta que o Servidor esta
 
         return HOST, PORT
+    #-----------------------Envia mensagens a todos-----------------------------
+    def send_all(self):
+        for env_host in self.list_port_rem:
 
+            posicao = self.list_port_rem.index(env_host)
+            print("ENV IP:", self.list_ips[posicao], self.list_ports[posicao])
+
+            while True:
+
+                try:
+                    HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
+                    PORT = int(self.list_ports[posicao])
+
+                    tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    dest3 = (HOST, PORT)
+                    print(dest3)
+                    tcp3.connect(dest3)
+
+                    tcp3.send(self.list_users.encode())
+                    break
+
+                except:
+                    print("ERRO DE ENVIO")
+                time.sleep(2)
+    #===========================================================================
     #-----------------------Enviar mensagens para vários-----------------------#
-    def connect_server(self, host, port, port_un,text, dest):
+
+    def connect_server(self, host, port, port_un,text, dest, id_remetente):
 
         #print("JUCA", host, port, text)
         pos_port = 0;
+
+        nome_rem = str(self.list_users[self.list_port_rem.index(id_remetente)])
+
+        #pos_rem = self.list_port_rem.index(cliente[1])
 
         if dest == "all":
 
@@ -247,6 +280,9 @@ class servidor_interface(Thread):
                 print("ENV IP:", env_host, self.list_ports)
                 posicao = self.list_port_rem.index(port_un)
                 #pos_port =
+
+                msg = '{"mensagem":  "'+text+'", "destinatario": "'+"all"+'", "remetente": "'+nome_rem+'"}'
+
 
                 try:
                     HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
@@ -257,7 +293,8 @@ class servidor_interface(Thread):
                     tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     dest2 = (HOST, PORT)
                     tcp2.connect(dest2)
-                    tcp2.send(text.encode())
+
+                    tcp2.send(msg.encode())
 
                 except:
                     print("ERRO DE ENVIO")
@@ -266,7 +303,9 @@ class servidor_interface(Thread):
         else:
 
             posicao = self.list_users.index(str(dest))
+
             #print("DEST:POS:PORT ", dest, posicao)
+            msg = '{"mensagem":  "'+text+'", "destinatario": "'+self.list_users[posicao]+'", "remetente": "'+nome_rem+'"}'
 
             try:
                 HOST = str(self.list_ips[posicao])

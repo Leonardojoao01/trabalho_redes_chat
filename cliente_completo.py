@@ -4,6 +4,7 @@ import socket
 import json
 
 
+
 class servidor_interface():
     subject_list = ""
     def __init__(self, root=None):
@@ -154,7 +155,7 @@ class servidor_interface():
             #print("Não conectado --  ERRO DE ENVIO")
 
 
-    def set_subject(self):  # Envia a mensagem para o servidor e set no campo o que foi enviando
+    def set_subject(self):  # Escreve no campo conversa o assunto a ser enviado e envia a mensagem
 
         msg = '{"mensagem":  "'+self.nome.get()+'", "destinatario": "'+self.select_peaple.get()+'", "host": "'+ str(self.HOST_local)+'", "port": "'+str(self.port_l.get())+'" }'
 
@@ -203,7 +204,7 @@ class servidor_interface():
         tcp.bind(orig)
         tcp.listen(1)
 
-        while True:                     # Cria duas THREADS, SOCKET
+        while True:                     # Cria THREAD, SOCKET
             con, cliente = tcp.accept()
             _thread.start_new_thread(self.conectado, tuple([con, cliente]))
 
@@ -223,7 +224,13 @@ class servidor_interface():
             #self.subject_list=self.subject_list+"\n"+msg.decode()
             self.subject_list=msg.decode()
 
-            self.subject.insert(0, self.subject_list)
+            #Leitura da mensagem no fomato json
+            msg_desc = json.loads(msg.decode())
+
+            self.subject.insert(0, msg_desc["mensagem"])
+            self.subject.insert(0, "DE: " +msg_desc["remetente"]+" PARA: "+msg_desc["destinatario"])
+
+            #self.subject.insert(0, self.subject_list)
 
             #self.set_text(self.subject_list, self.subject)
 

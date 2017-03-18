@@ -227,8 +227,14 @@ class servidor_interface():
             #Leitura da mensagem no fomato json
             msg_desc = json.loads(msg.decode())
 
-            self.subject.insert(0, msg_desc["mensagem"])
-            self.subject.insert(0, "DE: " +msg_desc["remetente"]+" PARA: "+msg_desc["destinatario"])
+            if msg_desc["mensagem"] == "!TRUE!":
+                print("FOI")
+                #self.set_text(msg_desc["destinatario"] ,"users")
+                self.users['text'] = msg_desc["remetente"]
+
+            else:
+                self.subject.insert(0, msg_desc["mensagem"])
+                self.subject.insert(0, "DE: " +msg_desc["remetente"]+" PARA: "+msg_desc["destinatario"])
 
             #self.subject.insert(0, self.subject_list)
 

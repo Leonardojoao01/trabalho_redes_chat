@@ -190,7 +190,7 @@ class servidor_interface(Thread):
                 self.list_ports.append(msg_desc["port"])
                 self.list_users.append(str(msg_desc["mensagem"]))
                 self.set_text(self.list_users, self.users)
-                #self.send_all()
+                self.send_all()
                 #self.connect_server("192.168.15.9","4000",cliente[1],"juca","all")
 
                 checker=False
@@ -199,7 +199,7 @@ class servidor_interface(Thread):
             #==============================================
 
         print("Finalizando conexao do cliente", cliente)
-
+        self.send_all()
         # Encontra a posicao na tabela de id de conexao(cliente[1])
         # Dessa forma é possivel remover todos os dados referente ao mesmo cliente
         # em todas as listas
@@ -243,25 +243,28 @@ class servidor_interface(Thread):
         for env_host in self.list_port_rem:
 
             posicao = self.list_port_rem.index(env_host)
-            print("ENV IP:", self.list_ips[posicao], self.list_ports[posicao])
+            #print("ENV IP:", self.list_ips[posicao], self.list_ports[posicao])
 
-            while True:
+            users_msg = ' '.join(map(str, self.list_users))#str(users) + users_msg
 
-                try:
-                    HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
-                    PORT = int(self.list_ports[posicao])
+            msg = '{"mensagem":  "'+"!TRUE!"+'", "destinatario": "'+"all"+'", "remetente": "'+users_msg+'"}'
 
-                    tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    dest3 = (HOST, PORT)
-                    print(dest3)
-                    tcp3.connect(dest3)
 
-                    tcp3.send(self.list_users.encode())
-                    break
+            try:
+                HOST = str(self.list_ips[posicao])    # Endereco IP do Servidor
+                PORT = int(self.list_ports[posicao])
 
-                except:
-                    print("ERRO DE ENVIO")
-                time.sleep(2)
+                tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                dest3 = (HOST, PORT)
+                print(dest3)
+                tcp3.connect(dest3)
+
+                tcp3.send(msg.encode())
+                tcp3.close()
+
+            except:
+                print("ERRO DE ENVIO")
+
     #===========================================================================
     #-----------------------Enviar mensagens para vários-----------------------#
 
@@ -271,7 +274,7 @@ class servidor_interface(Thread):
         pos_port = 0;
 
         nome_rem = str(self.list_users[self.list_port_rem.index(id_remetente)])
-
+        #("NOME_DEST:", nome_rem)
         #pos_rem = self.list_port_rem.index(cliente[1])
 
         if dest == "all":
@@ -306,14 +309,14 @@ class servidor_interface(Thread):
 
             #print("DEST:POS:PORT ", dest, posicao)
             msg = '{"mensagem":  "'+text+'", "destinatario": "'+self.list_users[posicao]+'", "remetente": "'+nome_rem+'"}'
-
+            #print("MSN: ", msg)
             try:
                 HOST = str(self.list_ips[posicao])
                 PORT = int(self.list_ports[posicao])
                 tcp2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 dest2 = (HOST, PORT)
                 tcp2.connect(dest2)
-                tcp2.send(text.encode())
+                tcp2.send(msg.encode())
             except:
                 print("ERRO DE ENVIO")
 

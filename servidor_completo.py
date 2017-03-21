@@ -118,16 +118,35 @@ class servidor_interface(Thread):
 
     def set_subject(self):
 
-        subject_all = ""
+        #subject_field = self.nome.get()
+        for env_host in self.list_port_rem:
+            posicao = self.list_port_rem.index(env_host)
 
-        subject_field = self.nome.get()
+            msg = '{"mensagem":  "'+str(self.nome.get())+'", "destinatario": "'+self.list_users[posicao]+'", "remetente": "'+"SERVER"+'"}'
 
-        self.subject_list.append(subject_field+"\n")
+            try:
+                HOST = str(self.list_ips[posicao])
+                PORT = int(self.list_ports[posicao])
+                tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                tcp3.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                dest3 = (HOST, PORT)
+                tcp3.connect(dest3)
+                tcp3.send(msg.encode())
+                tcp3.close()
 
-        for subject_unique in self.subject_list:
-             subject_all = subject_all + subject_unique #+ "\n"
+            except Exception as inst:
+            	print(inst)
+            	print("ERRO DE ENVIO")
 
-        self.subject['text'] = subject_all
+
+
+
+        #self.subject_list.append(subject_field+"\n")
+
+        #for subject_unique in self.subject_list:
+        #     subject_all = subject_all + subject_unique #+ "\n"
+
+        #self.subject['text'] = subject_all
 
     def serv(self, juca1, juca2):
         #--------------------------Pega o IP local da máquina-------------------
@@ -247,7 +266,7 @@ class servidor_interface(Thread):
             #print("ENV IP:", self.list_ips[posicao], self.list_ports[posicao])
 
             users_msg = ' '.join(map(str, self.list_users))#str(users) + users_msg
-            #			
+            #
             msg = '{"mensagem":  "'+"!TRUE!"+'", "destinatario": "'+"all"+'", "remetente": "'+users_msg+'"}'
             #print(msg)
 
@@ -257,7 +276,7 @@ class servidor_interface(Thread):
 	            PORT = int(self.list_ports[posicao])
 	            assert(PORT)
 	            #PORT=4100
-	            print("porta - \n" +str(PORT))	
+	            print("porta - \n" +str(PORT))
 	            #tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	            #tcp3 = socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	            tcp3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

@@ -138,6 +138,7 @@ class servidor_interface():
             PORT = 5000            		  # Porta que o Servidor esta
 
             self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             dest = (HOST, PORT)
 
             print(HOST,PORT)
@@ -215,7 +216,7 @@ class servidor_interface():
     def conectado(self, con, cliente):
         print("Conectado por", cliente)     # Utilizado p/ verificar quem conecta
 
-        self.set_text(cliente, self.users)
+        #self.set_text(cliente, self.users)
 
         while True:
             msg = con.recv(1024)            # Tamanho max da mensagem "(bytes)???"
